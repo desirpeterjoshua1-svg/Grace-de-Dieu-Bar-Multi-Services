@@ -6,11 +6,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Sauvegarder main.dart
+        run: |
+          mkdir -p /tmp/backup
+          cp lib/main.dart /tmp/backup/main.dart
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.x'
-      - run: flutter pub get
-      - run: flutter build apk --release
+
+      - name: Generer les fichiers Android manquants
+        run: |
+          flutter create . --platforms=android --project-name=grase_de_dieu_pos
+          cp /tmp/backup/main.dart lib/main.dart
+          flutter pub add intl
+
+      - name: Fabriquer APK
+        run: flutter build apk --release
+
       - uses: actions/upload-artifact@v4
         with:
           name: GraseDeDieu-App-Android
